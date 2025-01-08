@@ -7,6 +7,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     public Transform player;
+    public Transform station;
     public float detectionDistance = 5f;
     private DecisionNode rootnode;
 
@@ -15,14 +16,21 @@ public class EnemyAI : MonoBehaviour
     {
         var chasePlayer = new Action(() => Chase());
         var idle = new Action(() => Idle());
+        var dock = new Action(() => Dock());
 
         var chaseNode = new LeafNode(chasePlayer);
         var idleNode = new LeafNode(idle);
+        var dockNode = new LeafNode(dock);
+
+        var shouldStation = new DecisionNode(
+            () => Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(station.position.x, station.position.z)) > 1f,
+            dockNode,
+            idleNode);
 
         var playerWithinReach = new DecisionNode(
             () => Vector2.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(player.position.x, player.position.z)) < detectionDistance,
             chaseNode,
-            idleNode);
+            shouldStation);
 
         rootnode = playerWithinReach;
     }
@@ -41,7 +49,16 @@ public class EnemyAI : MonoBehaviour
 
     private void Idle()
     {
+        if(!gameObject.activeSelf)
+            transform.gameObject.SetActive(true);
+        
         Debug.Log("Nothing to see here, move along");
+    }
+
+    private void Dock()
+    {
+        Debug.Log("Moving to the station");
+        transform.position = Vector3.MoveTowards(transform.position, station.position, Time.deltaTime * 2f);
     }
 }
 
