@@ -741,12 +741,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1944347192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52e84510870ede341b88aa674bd34104, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f0b7591d280dc14a9527a29aac56865, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 447000369}
   station: {fileID: 1383919900}
+  position: {x: 0, y: 0, z: 0}
   detectionDistance: 5
+  Track: 0
+  Dock: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
