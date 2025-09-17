@@ -1,12 +1,48 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
 public interface IStrategy
 {
     BTNode.Status Process();
-    void Reset();
+    void Reset()
+    {
+        //Default implementation does nothing so we don't have one billion empty methods
+    }
+}
+
+public class Condition : IStrategy
+{
+    readonly Func<bool> predicate;
+    
+
+
+    public Condition(Func<bool> predicate)
+    {
+        this.predicate = predicate;
+    }
+
+    public BTNode.Status Process() => predicate() ? BTNode.Status.SUCCESS : BTNode.Status.FAILURE;
+}
+
+public class ActionStrategy : IStrategy
+{
+    readonly Action doSomething;
+
+    public ActionStrategy(Action doSomething) 
+    {
+        this.doSomething = doSomething;
+    }
+
+    public BTNode.Status Process()
+    {
+        doSomething();
+        return BTNode.Status.SUCCESS;
+    }
+
 }
 
 public class PatrolStrategy : IStrategy
@@ -18,7 +54,7 @@ public class PatrolStrategy : IStrategy
     int currentIndex;
     bool isPathCalculated;
 
-    public PatrolStrategy(Transform entity, NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed)
+    public PatrolStrategy(Transform entity, NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed = 2f)
     {
         this.entity = entity;
         this.agent = agent;
@@ -33,7 +69,7 @@ public class PatrolStrategy : IStrategy
 
         var target = patrolPoints[currentIndex];
         agent.SetDestination(target.position);
-        entity.LookAt(target);
+        //entity.LookAt(target);
 
         if(isPathCalculated && agent.remainingDistance < 0.1f)
         {

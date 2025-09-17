@@ -22,7 +22,6 @@ public class BehaviorTree : BTNode
     }
 }
 
-
 public class BTLeaf : BTNode
 {
     readonly IStrategy strategy;
@@ -67,4 +66,56 @@ public class BTNode
         }
     }
     
+}
+
+public class BTSequence : BTNode
+{
+    public BTSequence(string name) : base(name) { }
+
+    public override Status Process()
+    {
+        if (currentChild < children.Count)
+        {
+            switch (children[currentChild].Process()) //stack overflow error here
+            {
+                case Status.RUNNING:
+                    return Status.RUNNING;
+                case Status.FAILURE:
+                    Reset();
+                    return Status.FAILURE;
+                default:
+                    currentChild++;
+                    return currentChild == children.Count ? Status.SUCCESS : Status.RUNNING;
+            }
+        }
+
+        Reset();
+        return Status.SUCCESS;
+    }
+}
+
+public class BTSelector : BTNode
+{
+    public BTSelector(string name) : base(name) { }
+
+    public override Status Process()
+    {
+        if (currentChild < children.Count)
+        {
+            switch (children[currentChild].Process())
+            {
+                case Status.RUNNING:
+                    return Status.RUNNING;
+                case Status.SUCCESS:
+                    Reset();
+                    return Status.SUCCESS;
+                default:
+                    currentChild++;
+                    return Status.RUNNING;
+            }
+        }
+
+        Reset();
+        return Status.FAILURE;
+    }
 }
