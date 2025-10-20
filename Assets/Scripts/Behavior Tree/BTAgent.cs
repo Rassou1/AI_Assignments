@@ -16,7 +16,6 @@ public class BTAgent : MonoBehaviour
     {
         
         tree = new BehaviorTree("Enemy");
-        //tree.AddChild(new BTLeaf("Patrol", new PatrolStrategy(transform, agent, waypoints)));
 
         BTLeaf isTreasurePresent = new BTLeaf("IsTreasurePresent", new Condition(() => treasure.activeSelf));
         BTLeaf moveToTreasure = new BTLeaf("MoveToTreasure", new ActionStrategy(() => agent.SetDestination(treasure.transform.position)));
@@ -38,8 +37,10 @@ public class BTAgent : MonoBehaviour
         goToEitherTreasure.AddChild(goToTreasure);
         goToEitherTreasure.AddChild(goToOtherTreasure);
 
+        tree.AddChild(new BTLeaf("Patrol", new PatrolStrategy(transform, agent, waypoints)));
         tree.AddChild(goToEitherTreasure);
         
+
     }
 
     // Update is called once per frame

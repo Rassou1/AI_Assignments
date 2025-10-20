@@ -18,8 +18,6 @@ public class Condition : IStrategy
 {
     readonly Func<bool> predicate;
     
-
-
     public Condition(Func<bool> predicate)
     {
         this.predicate = predicate;

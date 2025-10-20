@@ -119,3 +119,13 @@ public class BTSelector : BTNode
         return Status.FAILURE;
     }
 }
+
+public class BTInverter : BTNode
+{
+    public BTInverter(string name) : base(name) { }
+
+    public override Status Process()
+    {
+        return Status.SUCCESS;
+    }
+}
