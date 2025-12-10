@@ -11,13 +11,19 @@ public class BehaviorTree : BTNode
     {
         while (currentChild < children.Count)
         {
-            var status = children[currentChild].Process();
-            if(status != Status.SUCCESS)
+            switch(children[currentChild].Process())
             {
-                return status;
+                case Status.RUNNING:
+                    return Status.RUNNING;
+                case Status.SUCCESS:
+                    currentChild++;
+                    return currentChild < children.Count ? Status.RUNNING : Status.SUCCESS;
+                case Status.FAILURE:
+                    Reset();
+                    return Status.FAILURE;
             }
-            currentChild++;
         }
+        Reset();
         return Status.SUCCESS;
     }
 }
@@ -74,16 +80,16 @@ public class BTSequence : BTNode
 
     public override Status Process()
     {
-        if (currentChild < children.Count)
+        while (currentChild < children.Count)
         {
-            switch (children[currentChild].Process()) //stack overflow error here
+            switch (children[currentChild].Process())
             {
                 case Status.RUNNING:
                     return Status.RUNNING;
                 case Status.FAILURE:
-                    Reset();
+                    currentChild = 0;
                     return Status.FAILURE;
-                default:
+                case Status.SUCCESS:
                     currentChild++;
                     return currentChild == children.Count ? Status.SUCCESS : Status.RUNNING;
             }
@@ -100,7 +106,7 @@ public class BTSelector : BTNode
 
     public override Status Process()
     {
-        if (currentChild < children.Count)
+        while (currentChild < children.Count)
         {
             switch (children[currentChild].Process())
             {
@@ -109,7 +115,7 @@ public class BTSelector : BTNode
                 case Status.SUCCESS:
                     Reset();
                     return Status.SUCCESS;
-                default:
+                case Status.FAILURE:
                     currentChild++;
                     return Status.RUNNING;
             }
@@ -126,6 +132,22 @@ public class BTInverter : BTNode
 
     public override Status Process()
     {
+         switch (children[0].Process())
+         {
+             case Status.RUNNING:
+                 return Status.RUNNING;
+             case Status.SUCCESS:
+                 Reset();
+                 Debug.Log("Child returned success, we returned failure");
+                 return Status.FAILURE;
+             case Status.FAILURE:
+                 Reset();
+                 Debug.Log("Child returned failure, we returned success");
+                 return Status.SUCCESS;
+         }
+
+        Reset();
         return Status.SUCCESS;
+
     }
 }
