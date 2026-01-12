@@ -36,7 +36,7 @@ public class BTAgent : MonoBehaviour
         inv_PlayerInRange.AddChild(isPlayerInRange);
         
         BTSequence goToTreasure = new BTSequence("GoToTreasure");
-        goToTreasure.AddChild(inv_PlayerInRange); //activate to show inverter working
+        //goToTreasure.AddChild(inv_PlayerInRange); //activate to show inverter working
         goToTreasure.AddChild(isTreasurePresent);
         goToTreasure.AddChild(moveToTreasure);
 
